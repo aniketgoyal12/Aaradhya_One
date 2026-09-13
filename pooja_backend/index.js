@@ -6,6 +6,7 @@ import pool from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 import packageRoutes from "./routes/packageRoutes.js";
+import orderRoutes from "./routes/orderRoutes.js";
 
 dotenv.config();
 
@@ -42,6 +43,7 @@ app.get("/test-db", async (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/packages", packageRoutes);
+app.use("/api/orders", orderRoutes);
 
 // 404 Handler
 app.use((req, res) => {
