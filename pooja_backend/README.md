@@ -1,173 +1,118 @@
-# Aaradhya (आराध्या) — Family Devotional E-Commerce & Pujari Platform
+# Shubarmbh (शुभ आरंभ) — Backend REST API & Real-Time Engine
 
-[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-brightgreen)](https://nodejs.org/)
-[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-blue)](https://www.postgresql.org/)
-[![JWT Auth](https://img.shields.io/badge/Auth-JWT%20%2B%20bcrypt-orange)](https://jwt.io/)
-[![License](https://img.shields.io/badge/License-ISC-green)](#)
+[![Node.js](https://img.shields.io/badge/Node.js-v18%2B-339933.svg?style=flat-square&logo=node.js)](https://nodejs.org/)
+[![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1.svg?style=flat-square&logo=postgresql)](https://www.postgresql.org/)
+[![JWT Auth](https://img.shields.io/badge/Auth-JWT%20%2B%20bcrypt-orange.svg?style=flat-square&logo=json-web-tokens)](https://jwt.io/)
+[![Socket.io](https://img.shields.io/badge/Real--Time-Socket.io-010101.svg?style=flat-square&logo=socket.io)](https://socket.io/)
+[![License](https://img.shields.io/badge/License-ISC-8B1E22.svg?style=flat-square)](#)
 
-> **Aaradhya** is a mass-market devotional e-commerce and ritual service platform. It enables families to purchase customized, bundled pooja item packages (with itemized price masking and dynamic price deduction upon item removal), book verified Pujaris (priests) either by direct selection or through an automated zonal broadcast engine, and access real-time customer support backed by a powerful Admin Governance Dashboard.
-
----
-
-## 🌟 Key Platform Features
-
-### 1. Customizable Pooja Packages & Item Masking
-- **Bundled Ritual Kits:** Pre-assembled packages for festivals and ceremonies (e.g., *Ganesha Chaturthi Grand Kit*, *Satyanarayan Pooja Kit*).
-- **Masked Itemized Pricing:** Package cards present a single bundled price without disclosing wholesale/individual item costs to the user.
-- **Dynamic Package Customization:** Devotees can toggle off items they already possess at home. The system dynamically recalculates and reduces the package price by the removed item's deduction value.
-
-### 2. Smart Pujari Selection & Zonal Broadcast Engine
-- **Flexible Booking Options at Checkout:** Devotees can choose between:
-  - **Direct Request:** Select a specific verified Pujari based on profile, ratings, and language preferences.
-  - **Open Zonal Broadcast:** If no Pujari is selected, the platform broadcasts a real-time notification (`NEW_POOJA_REQUEST`) to all active Pujaris connected in that delivery **zone**.
-- **Atomic Race-Condition Locks:** Uses Redis distributed locks (`SETNX`) / SQL row-level locks to ensure exactly one Pujari can accept a broadcasted booking request.
-- **Escrow Payout Release:** Pujari payouts are safely held in pending state and released automatically upon verified ceremony completion.
-
-### 3. Customer Support Tracking & Live Chat Transcript Engine
-- **Unassigned Ticket Queue:** Support tickets created by customers enter an unassigned queue visible in the Admin Dashboard.
-- **Executive Assignment:** Admins can manually assign or auto-assign unhandled tickets to Support Executives based on workload SLAs.
-- **Real-Time Live Chat:** Socket.io powered bidirectional chat room (`ticket:<ticket_id>`) between customer and executive.
-- **Admin Transcript Viewer:** Admins can inspect complete chronological chat transcripts for any support case at any time.
+> **Shubarmbh (शुभ आरंभ)** — *Pooja Essentials For a Divine Life*  
+> High-performance RESTful API and WebSocket gateway powering mass-market devotional e-commerce, multi-pillar catalog management, dynamic masked package price calculations, atomic zonal Pujari dispatches, live support chat, and financial escrow settlements.
 
 ---
 
-## 🔐 Role-Based Access Control (RBAC) Matrix
+## 🪔 The 4 Brand Pillars (Catalog Taxonomy)
 
-| User Role | Registration Requirement | Permissions & Access Scope |
+The database and API support products organized under the 4 brand pillars:
+1. `pooja_items`: Brass diyas, kumkum, camphor, chandan, agarbatti.
+2. `ritual_essentials`: Gangajal, havan samagri, natural dhoop cones, cotton wicks.
+3. `spiritual_gifts`: Gold-plated yantras, brass deity murtis, divine gift boxes.
+4. `traditional_products`: Copper kalash, handloom pooja asans, brass thalis, bell chimes.
+
+---
+
+## 🛠️ Architecture & Tech Stack
+
+| Layer | Technology | Details |
 | :--- | :--- | :--- |
-| `customer` | Name, Email, Password, Phone | Browse packages, place customized orders, select/request Pujari, open & chat on owned tickets. |
-| `pujari` | Name, Email, Password, Phone, **Zone** *(Required)* | View zonal booking broadcasts, accept open bookings, mark ceremonies completed for payout. |
-| `support` | Name, Email, Password | View assigned support tickets, conduct live chat sessions with customers, resolve issues. |
-| `admin` | Internal Provisioning | Full system governance — manage catalog (products/packages), assign tickets, view all live chat transcripts, audit payouts. |
+| **Database** | PostgreSQL 14+ | ACID transactions, foreign keys, row-level locks (`FOR UPDATE`), indexing. |
+| **Runtime & Framework** | Node.js + Express.js | Asynchronous REST API utilizing native ES Modules (`import/export`). |
+| **Authentication & RBAC**| JWT + bcrypt (10 rounds) | Token-based stateless authentication with `id`, `email`, `role`, and `zone`. |
+| **Real-Time Gateway** | Socket.io | Instant push notifications for zonal Pujari alerts and customer support chat. |
+| **Concurreny Control** | SQL Row-Level Locking | Prevents race conditions during Pujari broadcast acceptance. |
 
 ---
 
-## 🛠️ Tech Stack & Architecture
+## 🔐 Role-Based Access Control (RBAC)
 
-| Component | Technology | Description |
-| :--- | :--- | :--- |
-| **Database** | **PostgreSQL (SQL)** | Authoritative relational database enforcing ACID compliance, foreign keys, orders, and zonal indexing. |
-| **Backend Framework** | **Node.js + Express.js** | Asynchronous RESTful API backend using ES Modules (`import/export`). |
-| **Authentication & RBAC** | **JWT + bcrypt** | Token-based auth with payload carrying `id`, `email`, `role`, and `zone`. |
-| **Real-Time Gateway** | **Socket.io + WebSockets** | Instant zonal Pujari notifications and support chat messaging. |
-| **Cache & Locks** | **Redis + BullMQ** | High-speed session caching, distributed locks, and ticket SLA timeout queues. |
-| **Admin Frontend** | **React.js / Next.js** | Modern web dashboard for catalog management, ticket dispatch, and live transcript monitoring. |
+| Role | Scope & Permissions |
+| :--- | :--- |
+| `customer` | Browse products and packages, calculate customized package prices, place orders, book Pujaris, open support tickets. |
+| `pujari` | Connect to zonal broadcast channels, view open ceremony bookings in assigned zone, claim bookings atomically, enter ritual OTP. |
+| `support` | View unassigned and assigned customer support tickets, participate in real-time chat sessions with customers, resolve issues. |
+| `admin` | Full governance — create/update/delete products and packages across 4 pillars, reassign support tickets, view live transcripts, audit escrow ledger. |
 
 ---
 
-## 📡 Sample API Payloads & Responses
+## 📡 Comprehensive API Route Specifications
 
-### 1. Register Pujari User (`POST /api/auth/register`)
-**Request Body:**
-```json
-{
-  "name": "Acharya Ramesh Sharma",
-  "email": "ramesh.pujari@example.com",
-  "phone": "+919876543210",
-  "password": "SecurePassword123",
-  "role": "pujari",
-  "zone": "North-Delhi"
-}
-```
+### 1. Authentication (`/api/auth`)
+* `POST /api/auth/register` — Register new user (`customer`, `pujari`, `support`, `admin`). Pujaris require `zone`.
+* `POST /api/auth/login` — Authenticate user and receive signed JWT.
+* `GET /api/auth/me` — Protected endpoint returning current user profile.
 
-**Success Response (`201 Created`):**
-```json
-{
-  "success": true,
-  "message": "Registration successful",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "user": {
-    "id": 2,
-    "name": "Acharya Ramesh Sharma",
-    "email": "ramesh.pujari@example.com",
-    "phone": "+919876543210",
-    "role": "pujari",
-    "zone": "North-Delhi",
-    "created_at": "2026-09-13T19:30:00.000Z"
-  }
-}
-```
+### 2. Devotional Products (`/api/products`)
+* `GET /api/products` — Retrieve products with optional `?category=` filter across the 4 pillars.
+* `GET /api/products/:id` — Retrieve single product details.
+* `POST /api/products` *(Admin)* — Add new devotional item with stock quantity and category.
+* `PUT /api/products/:id` *(Admin)* — Update product details or restock inventory.
+* `DELETE /api/products/:id` *(Admin)* — Remove product from catalog.
 
-### 2. Fetch Package with Included Items (`GET /api/packages/1`)
-**Success Response (`200 OK`):**
-```json
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "name": "Ganesha Chaturthi Grand Kit",
-    "description": "Complete ritual kit including clay idol, modak box, incense, and floral samagri.",
-    "base_price": "2499.00",
-    "image_URI": "https://cdn.aaradhya.com/kits/ganesha_grand.jpg",
-    "items": [
-      {
-        "package_item_id": 1,
-        "quantity": 1,
-        "product_id": 101,
-        "product_name": "Eco-friendly Clay Ganesha Idol (9 inch)",
-        "item_price": "899.00"
-      },
-      {
-        "package_item_id": 2,
-        "quantity": 1,
-        "product_id": 102,
-        "product_name": "Brass Aarti Diya",
-        "item_price": "450.00"
-      }
-    ]
-  }
-}
-```
+### 3. Bundled Packages (`/api/packages`)
+* `GET /api/packages` — List all pre-assembled pooja kits.
+* `GET /api/packages/:id` — Fetch single package with complete relational product item list.
+* `POST /api/packages` *(Admin)* — Assemble new package with bundled items `{ product_id, quantity }`.
+
+### 4. Orders & Dynamic Customization (`/api/orders`)
+* `POST /api/orders/calculate` — Computes updated package price based on removed items without exposing wholesale item costs.
+* `POST /api/orders` — Atomically creates order, decrements product stock, persists order items, and creates linked Pujari booking if required.
+* `GET /api/orders/my-orders` — Customer order history.
+* `GET /api/orders/:id` — Fetch order breakdown with active and removed items.
+* `GET /api/orders` *(Admin)* — List all platform orders with customer details.
+* `PUT /api/orders/:id/status` *(Admin)* — Transition order status (`placed`, `confirmed`, `completed`, `cancelled`). Automatically restores stock on cancellation.
+
+### 5. Pujari Bookings & Zonal Dispatch (`/api/pujari-bookings`)
+* `POST /api/pujari-bookings` — Create direct booking or trigger open zonal broadcast.
+* `GET /api/pujari-bookings/zonal-feed` *(Pujari/Admin)* — Retrieve open, unassigned bookings in Pujari's delivery zone.
+* `POST /api/pujari-bookings/:id/accept` *(Pujari)* — Atomically claim booking (`SELECT ... FOR UPDATE`), generate 6-digit ritual OTP.
+* `POST /api/pujari-bookings/:id/complete` *(Pujari/Admin)* — Verify OTP and release escrow payout.
+* `GET /api/pujari-bookings` *(Admin)* — Platform-wide booking governance list.
+* `GET /api/pujari-bookings/pujaris` — Verified Pujari directory with ratings and zonal locations.
+
+### 6. Support Tickets & Live Chat (`/api/support`)
+* `POST /api/support/tickets` — Open a customer support inquiry.
+* `GET /api/support/tickets` *(Support/Admin)* — List tickets with `?unassigned=true` or status filters.
+* `PUT /api/support/tickets/:id/assign` *(Admin/Support)* — Assign ticket to executive.
+* `GET /api/support/tickets/:id/messages` — Retrieve complete chronological chat transcript.
+* `POST /api/support/tickets/:id/messages` — Send message (persisted to SQL and emitted via Socket.io).
+
+### 7. Financial Settlements & Escrow (`/api/settlements`)
+* `GET /api/settlements` *(Admin)* — Retrieve full escrow transaction ledger.
+* `GET /api/settlements/stats` *(Admin)* — Calculate held vs released escrow funds.
 
 ---
 
-## 📁 Repository Structure
+## ⚡ WebSocket / Socket.io Events
 
-```
-pooja_backend/
-├── config/
-│   └── db.js                 # PostgreSQL connection pool (pg)
-├── controllers/
-│   ├── authController.js     # User registration, login, profile (getMe)
-│   ├── packageController.js  # Package listing & itemized relational query
-│   └── productController.js  # Product inventory CRUD
-├── middleware/
-│   └── authMiddleware.js     # JWT authentication & RBAC role authorization
-├── routes/
-│   ├── authRoutes.js         # /api/auth endpoints
-│   ├── packageRoutes.js      # /api/packages endpoints
-│   └── productRoutes.js      # /api/products endpoints
-├── schema/
-│   └── schema.sql            # Authoritative SQL database schema
-├── .env                      # DB credentials & JWT secret
-├── index.js                  # Server entry point & route mounting
-└── package.json              # Backend dependencies
-```
+| Event Name | Direction | Payload | Description |
+| :--- | :--- | :--- | :--- |
+| `join_zone` | Client $\rightarrow$ Server | `{ zone: "North-Delhi" }` | Pujari joins real-time zonal broadcast channel. |
+| `NEW_POOJA_REQUEST` | Server $\rightarrow$ Client | `{ booking_id, package_name, zone, date }` | Broadcasted to all Pujaris in matching zone when open booking is placed. |
+| `join_ticket` | Client $\rightarrow$ Server | `{ ticket_id }` | Customer, executive, or admin joins live support chat room. |
+| `send_message` | Client $\rightarrow$ Server | `{ ticket_id, message }` | Transmits live chat message. |
+| `receive_message` | Server $\rightarrow$ Client | `{ id, ticket_id, sender_id, message, created_at }` | Real-time message broadcast to all participants in ticket room. |
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Setup & Execution
 
-### Prerequisites
-- **Node.js** (v18 or higher)
-- **PostgreSQL** (v14 or higher)
-
-### 1. Database Setup
-1. Create a PostgreSQL database named `pooja_platform`:
-   ```sql
-   CREATE DATABASE pooja_platform;
-   ```
-2. Execute the schema script located at `schema/schema.sql`:
+1. Navigate to directory:
    ```bash
-   psql -U postgres -d pooja_platform -f schema/schema.sql
-   ```
-
-### 2. Backend Configuration & Installation
-1. Install dependencies:
-   ```bash
+   cd pooja_backend
    npm install
    ```
-2. Configure your `.env` file:
+
+2. Configure `.env`:
    ```env
    DB_USER=postgres
    DB_PASSWORD=your_password
@@ -178,14 +123,13 @@ pooja_backend/
    JWT_SECRET=pooja_jwt_secret_key_2026_super_secure
    ```
 
-### 3. Running the Server
-Start the development server with hot-reloading:
-```bash
-npm run dev
-```
-The server will run on `http://localhost:5000`.
+3. Initialize PostgreSQL schema:
+   ```bash
+   psql -U postgres -d pooja_platform -f schema/schema.sql
+   ```
 
----
-
-## 📄 License
-This project is licensed under the ISC License.
+4. Run server:
+   ```bash
+   npm run dev
+   # Server runs on http://localhost:5000
+   ```
