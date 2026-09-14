@@ -2,26 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+@layer base {
+  :root {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-[#0a0406] text-stone-100 antialiased selection:bg-gold-500/30 selection:text-gold-200 overflow-x-hidden;
+  }
 }
 
 .brand-devotional {
   font-family: 'Rozha One', serif;
 }
 
-/* Custom subtle scrollbar */
+.brand-regal {
+  font-family: 'Marcellus', 'Plus Jakarta Sans', serif;
+}
+
+/* Gold Metallic Text Gradient */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #FFF0BD 0%, #E5C365 30%, #D4AF37 50%, #B8860B 80%, #906515 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Maroon Vermilion Text Gradient */
+.text-maroon-gradient {
+  background: linear-gradient(135deg, #F9A8AD 0%, #EE5962 30%, #DC2626 50%, #8B1E22 80%, #5B0C10 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Custom smooth scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  background: rgba(18, 7, 10, 0.7);
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.7);
+  background: rgba(212, 175, 55, 0.25);
   border-radius: 9999px;
+  transition: background 0.2s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(245, 158, 11, 0.6);
+  background: rgba(212, 175, 55, 0.6);
 }
+
+/* Radiant Diya glow & subtle ambient animations */
+@keyframes diya-glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+    filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.3));
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.5));
+  }
+}
+
+@keyframes subtle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-4px); }
+}
+
+@keyframes shimmer-gold {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-diya {
+  animation: diya-glow 3.5s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: subtle-float 4s ease-in-out infinite;
+}
+
+.animate-shimmer-gold {
+  animation: shimmer-gold 2.5s infinite;
+}
+
+/* Devotional Glassmorphism surfaces */
+.glass-panel {
+  background: rgba(22, 11, 15, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.15);
+}
+
+.glass-panel-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-panel-hover:hover {
+  border-color: rgba(212, 175, 55, 0.4);
+  box-shadow: 0 10px 25px -5px rgba(212, 175, 55, 0.12), 0 8px 10px -6px rgba(10, 4, 6, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Gold rim highlight on velvet card */
+.card-devotional {
+  background: linear-gradient(180deg, rgba(28, 12, 17, 0.85) 0%, rgba(18, 7, 10, 0.95) 100%);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+  backdrop-filter: blur(16px);
+}
+
+

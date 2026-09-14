@@ -8,6 +8,7 @@ import Packages from './pages/Packages';
 import Orders from './pages/Orders';
 import PujariDispatch from './pages/PujariDispatch';
 import SupportTickets from './pages/SupportTickets';
+import Settlements from './pages/Settlements';
 import ProductModal from './components/catalog/ProductModal';
 import PackageBuilder from './components/catalog/PackageBuilder';
 import { api } from './api/client';
@@ -19,6 +20,10 @@ function DashboardApp() {
   const [products, setProducts] = useState([]);
   const [packages, setPackages] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [bookings, setBookings] = useState([]);
+  const [pujaris, setPujaris] = useState([]);
+  const [tickets, setTickets] = useState([]);
+  const [settlements, setSettlements] = useState(null);
   const [loadingData, setLoadingData] = useState(false);
 
   // Modal states
@@ -26,27 +31,29 @@ function DashboardApp() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [isPackageBuilderOpen, setIsPackageBuilderOpen] = useState(false);
 
-  // Fetch products, packages, and orders from live backend
+  // Fetch all platform data from live backend
   const fetchData = useCallback(async () => {
     setLoadingData(true);
     try {
-      const [prodRes, pkgRes, orderRes] = await Promise.allSettled([
+      const [prodRes, pkgRes, orderRes, bookRes, pujRes, tickRes, setRes] = await Promise.allSettled([
         api.getProducts(),
         api.getPackages(),
         api.getAllOrders(),
+        api.getPujariBookings(),
+        api.getPujarisDirectory(),
+        api.getSupportTickets(),
+        api.getSettlements(),
       ]);
 
-      if (prodRes.status === 'fulfilled' && prodRes.value.success) {
-        setProducts(prodRes.value.data || []);
-      }
-      if (pkgRes.status === 'fulfilled' && pkgRes.value.success) {
-        setPackages(pkgRes.value.data || []);
-      }
-      if (orderRes.status === 'fulfilled' && orderRes.value.success) {
-        setOrders(orderRes.value.data || []);
-      }
+      if (prodRes.status === 'fulfilled' && prodRes.value.success) setProducts(prodRes.value.data || []);
+      if (pkgRes.status === 'fulfilled' && pkgRes.value.success) setPackages(pkgRes.value.data || []);
+      if (orderRes.status === 'fulfilled' && orderRes.value.success) setOrders(orderRes.value.data || []);
+      if (bookRes.status === 'fulfilled' && bookRes.value.success) setBookings(bookRes.value.data || []);
+      if (pujRes.status === 'fulfilled' && pujRes.value.success) setPujaris(pujRes.value.data || []);
+      if (tickRes.status === 'fulfilled' && tickRes.value.success) setTickets(tickRes.value.data || []);
+      if (setRes.status === 'fulfilled' && setRes.value.success) setSettlements(setRes.value.data || null);
     } catch (err) {
-      console.error('Error fetching catalog data:', err);
+      console.error('Error fetching dashboard data:', err);
     } finally {
       setLoadingData(false);
     }
@@ -92,7 +99,6 @@ function DashboardApp() {
     const res = await api.updateOrderStatus(orderId, newStatus);
     if (res.success && res.data) {
       setOrders((prev) => prev.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o)));
-      // Re-fetch products because status cancellation restores inventory stock
       if (newStatus === 'cancelled') {
         const prodRes = await api.getProducts();
         if (prodRes.success) setProducts(prodRes.data || []);
@@ -113,12 +119,13 @@ function DashboardApp() {
   }
 
   const tabTitles = {
-    dashboard: { title: 'Executive Overview', subtitle: 'Real-time metrics, active packages, and catalog health' },
+    dashboard: { title: 'Executive Overview', subtitle: 'Real-time platform metrics, active packages, and roadmap state' },
     products: { title: 'Inventory Management', subtitle: 'Manage devotional catalog items, stock quantities, and prices' },
     packages: { title: 'Pooja Packages', subtitle: 'Assemble ritual kits with automated masked pricing and item deduction' },
     orders: { title: 'Orders & Customization', subtitle: 'Phase 2: Live order governance, dynamic deductions & status lifecycles' },
-    'pujari-dispatch': { title: 'Zonal Pujari Dispatch', subtitle: 'Phase 3: Real-time broadcast engine & atomic Redis locks' },
-    'support-tickets': { title: 'Support & Transcripts', subtitle: 'Phase 4: Customer ticket governance and live audit logs' },
+    'pujari-dispatch': { title: 'Zonal Pujari Dispatch', subtitle: 'Phase 3: Real-time zonal broadcast engine & atomic acceptance locks' },
+    'support-tickets': { title: 'Support & Transcripts', subtitle: 'Phase 4: Customer ticket governance and live audit chat transcripts' },
+    settlements: { title: 'Financial Settlements', subtitle: 'Phase 6: Platform GMV, escrow custody, and post-OTP payout ledger' },
   };
 
   const currentMeta = tabTitles[currentTab] || tabTitles.dashboard;
@@ -136,6 +143,9 @@ function DashboardApp() {
           products={products}
           packages={packages}
           orders={orders}
+          bookings={bookings}
+          tickets={tickets}
+          settlements={settlements}
           onNavigate={setCurrentTab}
           onOpenProductModal={() => {
             setEditingProduct(null);
@@ -174,8 +184,27 @@ function DashboardApp() {
         />
       )}
 
-      {currentTab === 'pujari-dispatch' && <PujariDispatch />}
-      {currentTab === 'support-tickets' && <SupportTickets />}
+      {currentTab === 'pujari-dispatch' && (
+        <PujariDispatch
+          bookings={bookings}
+          pujaris={pujaris}
+          onRefresh={fetchData}
+        />
+      )}
+
+      {currentTab === 'support-tickets' && (
+        <SupportTickets
+          tickets={tickets}
+          onRefresh={fetchData}
+        />
+      )}
+
+      {currentTab === 'settlements' && (
+        <Settlements
+          data={settlements}
+          onRefresh={fetchData}
+        />
+      )}
 
       {/* Product Create / Edit Modal */}
       <ProductModal

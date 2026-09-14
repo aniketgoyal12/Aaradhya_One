@@ -1,80 +1,74 @@
-import React, { useState, useEffect } from 'react';
-import { Shield, Activity, RefreshCw } from 'lucide-react';
-import { api } from '../../api/client';
+import React from 'react';
+import { Shield, RefreshCw, Menu, PanelLeftClose, PanelLeftOpen, Sparkles } from 'lucide-react';
 
-export default function AdminHeader({ title, subtitle, onRefresh }) {
-  const [apiOnline, setApiOnline] = useState(null);
-  const [checking, setChecking] = useState(false);
-
-  const checkHealth = async () => {
-    setChecking(true);
-    try {
-      // Testing with lightweight products endpoint
-      await api.getProducts();
-      setApiOnline(true);
-    } catch {
-      setApiOnline(false);
-    } finally {
-      setChecking(false);
-    }
-  };
-
-  useEffect(() => {
-    checkHealth();
-    const interval = setInterval(checkHealth, 30000); // 30s poll
-    return () => clearInterval(interval);
-  }, []);
-
+export default function AdminHeader({ 
+  title, 
+  subtitle, 
+  onRefresh, 
+  isCollapsed, 
+  onToggleSidebar, 
+  onOpenMobileSidebar 
+}) {
   return (
-    <header className="h-16 px-8 border-b border-slate-800 bg-slate-900/60 backdrop-blur-md flex items-center justify-between sticky top-0 z-30">
-      <div>
-        <h1 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-          {title}
-        </h1>
-        {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
+    <header className="h-16 px-4 sm:px-6 lg:px-8 border-b border-gold-500/15 bg-[#12070a]/85 backdrop-blur-xl flex items-center justify-between sticky top-0 z-30 shadow-md shadow-black/40">
+      <div className="flex items-center gap-3">
+        {/* Mobile menu trigger */}
+        <button
+          onClick={onOpenMobileSidebar}
+          className="p-2 -ml-1.5 rounded-xl text-stone-400 hover:text-gold-300 hover:bg-gold-500/10 lg:hidden transition-all duration-200"
+          aria-label="Open Navigation"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+
+        {/* Desktop collapse toggle */}
+        <button
+          onClick={onToggleSidebar}
+          className="p-2 rounded-xl text-stone-400 hover:text-gold-300 hover:bg-gold-500/10 hidden lg:flex transition-all duration-200"
+          title={isCollapsed ? "Expand Sidebar (Ctrl+B)" : "Collapse Sidebar (Ctrl+B)"}
+        >
+          {isCollapsed ? (
+            <PanelLeftOpen className="w-5 h-5 text-gold-400/80" />
+          ) : (
+            <PanelLeftClose className="w-5 h-5 text-stone-400" />
+          )}
+        </button>
+
+        <div className="h-5 w-px bg-gold-500/20 hidden sm:block" />
+
+        <div>
+          <h1 className="text-base sm:text-lg font-bold text-stone-100 flex items-center gap-2">
+            <span>{title}</span>
+          </h1>
+          {subtitle && (
+            <p className="text-xs text-stone-400 hidden sm:block truncate max-w-md lg:max-w-xl">
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        {/* Backend API Connection Status Indicator */}
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-800/80 border border-slate-700/80 text-xs">
-          <span
-            className={`w-2 h-2 rounded-full ${
-              apiOnline === true
-                ? 'bg-emerald-400 shadow-sm shadow-emerald-400'
-                : apiOnline === false
-                ? 'bg-rose-500 shadow-sm shadow-rose-500'
-                : 'bg-amber-400 animate-pulse'
-            }`}
-          />
-          <span className="text-slate-300 font-medium">
-            {apiOnline === true ? 'Backend API Active' : apiOnline === false ? 'API Offline (Port 5000)' : 'Connecting...'}
-          </span>
-          <button
-            onClick={checkHealth}
-            disabled={checking}
-            className="p-1 hover:text-amber-400 text-slate-400 transition-colors"
-            title="Recheck backend connection"
-          >
-            <RefreshCw className={`w-3 h-3 ${checking ? 'animate-spin' : ''}`} />
-          </button>
-        </div>
-
-        {/* Global manual refresh trigger if passed */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Global manual refresh trigger */}
         {onRefresh && (
           <button
             onClick={onRefresh}
-            className="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors flex items-center gap-1.5"
+            className="px-3 py-1.5 text-xs font-medium text-stone-300 bg-[#1e0d13] hover:bg-maroon-900/60 hover:text-gold-200 rounded-xl border border-gold-500/20 hover:border-gold-500/40 transition-all duration-200 flex items-center gap-1.5 shadow-sm"
+            title="Refresh active dataset"
           >
-            <Activity className="w-3.5 h-3.5 text-amber-400" />
-            Refresh Data
+            <RefreshCw className="w-3.5 h-3.5 text-gold-400" />
+            <span className="hidden sm:inline">Refresh Data</span>
           </button>
         )}
 
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs font-semibold text-amber-400">
-          <Shield className="w-3.5 h-3.5" />
-          <span>Role: Admin</span>
+        {/* Admin Badge */}
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-maroon-900/50 via-[#1f0d14] to-gold-950/40 border border-gold-500/30 text-xs font-semibold text-gold-300 shadow-sm">
+          <Shield className="w-3.5 h-3.5 text-gold-400" />
+          <span className="hidden xs:inline">Role:</span>
+          <span>Admin</span>
         </div>
       </div>
     </header>
   );
 }
+

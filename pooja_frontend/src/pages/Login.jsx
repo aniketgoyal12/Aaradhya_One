@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ShieldCheck, Sparkles, Loader2, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Loader2, ArrowRight, Flame, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+import brandLogo from '../logo/Shubarmbh Pooja Essentials Logo(2).png';
 
 export default function Login() {
   const { login } = useAuth();
@@ -22,42 +24,74 @@ export default function Login() {
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Decorative Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+  const brandPillars = [
+    'Pooja Items',
+    'Ritual Essentials',
+    'Spiritual Gifts',
+    'Traditional Products'
+  ];
 
-      <div className="w-full max-w-md relative z-10">
-        {/* Brand Header (No image logo) */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-400 shadow-xl shadow-amber-500/20 mb-3">
-            <Sparkles className="w-6 h-6 text-slate-950 font-bold" />
+  return (
+    <div className="min-h-screen bg-[#0a0406] flex flex-col items-center justify-center p-4 relative overflow-hidden selection:bg-gold-500/30 selection:text-gold-200">
+      {/* Background Decorative Ambient Diya Auras */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[34rem] h-[34rem] bg-gradient-to-tr from-maroon-800/20 via-gold-500/15 to-transparent rounded-full blur-[130px] pointer-events-none animate-diya" />
+      <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-gold-600/10 rounded-full blur-[100px] pointer-events-none animate-float" />
+
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        className="w-full max-w-md relative z-10"
+      >
+        {/* Brand Header with Authentic Shubarmbh Logo */}
+        <div className="text-center mb-6">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            className="relative inline-block mb-3 w-full"
+          >
+            {/* Glowing outer aura */}
+            <div className="absolute -inset-2 bg-gradient-to-r from-gold-500/30 via-maroon-700/40 to-gold-400/30 rounded-3xl blur-lg -z-10 animate-diya" />
+            
+            <div className="w-full max-w-[340px] mx-auto rounded-3xl bg-[#FAF5EE] p-3 sm:p-4 border-2 border-gold-400/60 shadow-2xl shadow-black/80 flex items-center justify-center">
+              <img 
+                src={brandLogo} 
+                alt="Shubarmbh - Pooja Essentials For a Divine Life" 
+                className="w-full h-auto max-h-44 object-contain filter drop-shadow-sm"
+              />
+            </div>
+          </motion.div>
+
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-maroon-950/90 border border-gold-500/30 text-gold-300 text-xs font-semibold shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 text-gold-400" />
+            <span>Devotional Governance Portal</span>
           </div>
-          <div className="flex items-center justify-center gap-2">
-            <h1 className="brand-devotional text-3xl text-amber-400 font-bold tracking-wide">आराध्या</h1>
-            <span className="text-2xl font-bold tracking-tight text-slate-100">Aaradhya</span>
-          </div>
-          <p className="text-xs uppercase tracking-widest font-semibold text-slate-400 mt-1">
-            Admin Governance Portal
-          </p>
         </div>
 
         {/* Login Form Box */}
-        <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 backdrop-blur-xl shadow-2xl shadow-slate-950">
-          <div className="flex items-center gap-2 pb-4 mb-5 border-b border-slate-800">
-            <ShieldCheck className="w-4 h-4 text-amber-400" />
-            <h2 className="text-sm font-semibold text-slate-200">Administrative Sign In</h2>
+        <div className="bg-[#14080c]/90 border border-gold-500/25 rounded-3xl p-7 sm:p-8 backdrop-blur-2xl shadow-2xl shadow-black/90 ring-1 ring-gold-500/15">
+          <div className="flex items-center gap-2.5 pb-4 mb-5 border-b border-gold-500/15">
+            <div className="w-8 h-8 rounded-xl bg-maroon-950/80 border border-gold-500/30 flex items-center justify-center shadow-inner">
+              <ShieldCheck className="w-4 h-4 text-gold-400" />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-stone-100">Administrative Sign In</h2>
+              <p className="text-[11px] text-stone-400 mt-0.5">Enter verified platform administrator credentials</p>
+            </div>
           </div>
 
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs leading-relaxed">
+            <motion.div 
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-5 p-3.5 rounded-2xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs leading-relaxed"
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-gold-400/80 mb-1.5">
                 Admin Email
               </label>
               <input
@@ -66,12 +100,12 @@ export default function Login() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="admin@aaradhya.com"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 text-sm transition-colors"
+                className="w-full px-4 py-3 rounded-2xl bg-[#0d0508] border border-gold-500/20 text-stone-100 placeholder-stone-600 focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30 text-sm transition-all shadow-inner"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              <label className="block text-xs font-bold uppercase tracking-wider text-gold-400/80 mb-1.5">
                 Password
               </label>
               <input
@@ -80,33 +114,37 @@ export default function Login() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-amber-500 text-sm transition-colors"
+                className="w-full px-4 py-3 rounded-2xl bg-[#0d0508] border border-gold-500/20 text-stone-100 placeholder-stone-600 focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30 text-sm transition-all shadow-inner"
               />
             </div>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full mt-3 py-3 px-4 bg-gradient-to-r from-gold-500 via-gold-400 to-amber-500 hover:from-gold-400 hover:to-amber-400 text-stone-950 font-extrabold text-sm rounded-2xl transition-all duration-200 shadow-lg shadow-gold-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin text-stone-950" />
               ) : (
                 <>
                   <span>Authenticate & Enter</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
-            </button>
+            </motion.button>
           </form>
 
-          <div className="mt-6 pt-4 border-t border-slate-800/80 text-center">
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Strict RBAC enforcement enabled. Only accounts with role <code className="text-amber-400 font-mono">admin</code> are granted governance access.
+          <div className="mt-5 pt-4 border-t border-gold-500/15 text-center">
+            <p className="text-[11px] text-stone-500 leading-relaxed">
+              Strict RBAC enforcement enabled. Only accounts with role <code className="text-gold-400 font-mono font-bold">admin</code> are granted access.
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
+
+

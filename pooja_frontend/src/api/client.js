@@ -82,4 +82,41 @@ export const api = {
     method: 'PUT',
     body: JSON.stringify({ status })
   }),
+
+  // Pujari Zonal Dispatch (Phase 3)
+  getPujariBookings: () => apiRequest('/pujari-bookings'),
+  getPujarisDirectory: () => apiRequest('/pujari-bookings/pujaris'),
+  createPujariBooking: (bookingData) => apiRequest('/pujari-bookings', {
+    method: 'POST',
+    body: JSON.stringify(bookingData)
+  }),
+  acceptPujariBooking: (id) => apiRequest(`/pujari-bookings/${id}/accept`, {
+    method: 'POST'
+  }),
+  completePujariBooking: (id, otp) => apiRequest(`/pujari-bookings/${id}/complete`, {
+    method: 'POST',
+    body: JSON.stringify({ otp })
+  }),
+
+  // Support Tickets & Live Chat (Phase 4)
+  getSupportTickets: (params = '') => apiRequest(`/support/tickets${params ? '?' + params : ''}`),
+  assignSupportTicket: (id, executive_id) => apiRequest(`/support/tickets/${id}/assign`, {
+    method: 'PUT',
+    body: JSON.stringify({ executive_id })
+  }),
+  getTicketMessages: (id) => apiRequest(`/support/tickets/${id}/messages`),
+  sendTicketMessage: (id, message) => apiRequest(`/support/tickets/${id}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ message })
+  }),
+  updateTicketStatus: (id, status) => apiRequest(`/support/tickets/${id}/status`, {
+    method: 'PUT',
+    body: JSON.stringify({ status })
+  }),
+
+  // Financial Settlements & Escrow Audit (Phase 6)
+  getSettlements: () => apiRequest('/settlements'),
+  releaseEscrowPayout: (booking_id) => apiRequest(`/settlements/${booking_id}/release`, {
+    method: 'POST'
+  }),
 };

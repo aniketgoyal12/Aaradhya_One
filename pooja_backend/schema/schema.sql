@@ -73,7 +73,25 @@ CREATE TABLE pujari_bookings(
     order_id INTEGER REFERENCES orders(id),
     requested_pujari_id INTEGER REFERENCES users(id),
     accepted_pujari_id INTEGER REFERENCES users(id),
-    STATUS VARCHAR(20) DEFAULT 'pending',
+    ceremony_name VARCHAR(150),
+    zone VARCHAR(100),
+    payout_amount NUMERIC(10,2) DEFAULT 1500.00,
+    otp VARCHAR(6),
+    status VARCHAR(20) DEFAULT 'pending', -- pending, accepted, completed, cancelled
+    completed_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+
+--PAYOUT TRANSACTIONS & ESCROW (Phase 6)
+CREATE TABLE payout_transactions(
+    id SERIAL PRIMARY KEY,
+    booking_id INTEGER REFERENCES pujari_bookings(id),
+    pujari_id INTEGER REFERENCES users(id),
+    amount NUMERIC(10,2) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'escrow_held', -- escrow_held, released, refunded
+    released_at TIMESTAMP,
+    transaction_ref VARCHAR(100),
     created_at TIMESTAMP DEFAULT NOW()
 );
 
@@ -84,8 +102,8 @@ CREATE TABLE support_tickets(
     customer_id INTEGER REFERENCES users(id),
     assigned_executive_id INTEGER REFERENCES users(id),
     subject VARCHAR(200),
-    status VARCHAR(20) DEFAULT 'open',
-    created_at  TIMESTAMP DEFAULT NOW()
+    status VARCHAR(20) DEFAULT 'open', -- open, in_progress, resolved, closed
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
 

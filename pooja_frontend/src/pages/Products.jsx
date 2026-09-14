@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Plus, Search, Edit2, Trash2, Package, AlertCircle } from 'lucide-react';
+import { Plus, Search, Edit2, Trash2, Package, AlertCircle, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Products({ products = [], onOpenCreate, onOpenEdit, onDelete }) {
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,58 +23,71 @@ export default function Products({ products = [], onOpenCreate, onOpenEdit, onDe
   };
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25 }}
+      className="space-y-6"
+    >
       {/* Top Controls */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Search Bar */}
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-gold-400/70 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search devotional items by name or description..."
+            placeholder="Search Shubarmbh devotional samagri by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-100 placeholder-slate-500 text-xs focus:outline-none focus:border-amber-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#14080c]/80 border border-gold-500/20 text-stone-100 placeholder-stone-500 text-xs focus:outline-none focus:border-gold-400 focus:ring-1 focus:ring-gold-400/30 transition-all backdrop-blur-md shadow-inner"
           />
         </div>
 
         {/* Action Button */}
-        <button
+        <motion.button
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onOpenCreate}
-          className="px-4 py-2 text-xs font-bold text-slate-950 bg-amber-500 hover:bg-amber-400 rounded-xl transition-all shadow-md shadow-amber-500/20 flex items-center justify-center gap-1.5"
+          className="px-4 py-2.5 text-xs font-bold text-stone-950 bg-gradient-to-r from-gold-500 via-gold-400 to-amber-500 hover:from-gold-400 hover:to-amber-400 rounded-2xl transition-all shadow-lg shadow-gold-500/20 flex items-center justify-center gap-1.5"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Product</span>
-        </button>
+        </motion.button>
       </div>
 
       {/* Products Table */}
-      <div className="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden backdrop-blur-sm shadow-xl">
+      <div className="bg-[#14080c]/90 border border-gold-500/20 rounded-3xl overflow-hidden backdrop-blur-xl shadow-2xl shadow-black/80">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-950/60 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                <th className="py-3.5 px-4">Item Details</th>
-                <th className="py-3.5 px-4">Price</th>
-                <th className="py-3.5 px-4">Stock Status</th>
-                <th className="py-3.5 px-4 text-right">Actions</th>
+              <tr className="border-b border-gold-500/15 bg-[#1a0b10]/90 text-[11px] font-bold uppercase tracking-wider text-gold-400/80">
+                <th className="py-4 px-5">Samagri Item</th>
+                <th className="py-4 px-5">Price</th>
+                <th className="py-4 px-5">Stock Status</th>
+                <th className="py-4 px-5 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60 text-xs">
+            <tbody className="divide-y divide-gold-500/10 text-xs">
               {filteredProducts.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="py-8 text-center text-slate-500 italic">
+                  <td colSpan={4} className="py-12 text-center text-stone-500 italic">
                     {searchTerm ? 'No matching products found.' : 'No products in inventory yet.'}
                   </td>
                 </tr>
               ) : (
-                filteredProducts.map((p) => {
+                filteredProducts.map((p, idx) => {
                   const isLowStock = (p.stock_quantity ?? 0) <= 5;
                   return (
-                    <tr key={p.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                    <motion.tr 
+                      key={p.id}
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.2, delay: Math.min(idx * 0.03, 0.3) }}
+                      className="hover:bg-maroon-950/30 transition-colors group"
+                    >
+                      <td className="py-4 px-5">
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-10 h-10 rounded-2xl bg-[#1f0d13] border border-gold-500/25 flex items-center justify-center flex-shrink-0 overflow-hidden shadow-inner group-hover:border-gold-400/50 transition-colors">
                             {p.image_URI ? (
                               <img
                                 src={p.image_URI}
@@ -84,53 +98,57 @@ export default function Products({ products = [], onOpenCreate, onOpenEdit, onDe
                                 }}
                               />
                             ) : (
-                              <Package className="w-4 h-4 text-amber-400" />
+                              <Package className="w-4 h-4 text-gold-400" />
                             )}
                           </div>
                           <div className="min-w-0 max-w-md">
-                            <p className="font-semibold text-slate-200 truncate">{p.name}</p>
-                            <p className="text-[11px] text-slate-400 truncate">
-                              {p.description || 'No description provided'}
+                            <p className="font-bold text-stone-200 truncate group-hover:text-gold-300 transition-colors">{p.name}</p>
+                            <p className="text-[11px] text-stone-400 truncate mt-0.5">
+                              {p.description || 'Devotional ritual samagri item'}
                             </p>
                           </div>
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 font-mono font-semibold text-slate-200">
+                      <td className="py-4 px-5 font-mono font-bold text-gold-300">
                         ₹{parseFloat(p.price).toFixed(2)}
                       </td>
 
-                      <td className="py-3.5 px-4">
+                      <td className="py-4 px-5">
                         <span
-                          className={`inline-flex items-center gap-1 text-[11px] font-medium px-2 py-0.5 rounded-full ${
+                          className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${
                             isLowStock
-                              ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                              : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                              ? 'bg-rose-950/60 text-rose-300 border border-rose-500/30'
+                              : 'bg-emerald-950/60 text-emerald-300 border border-emerald-500/30'
                           }`}
                         >
-                          {isLowStock && <AlertCircle className="w-3 h-3" />}
+                          <span className={`w-1.5 h-1.5 rounded-full ${isLowStock ? 'bg-rose-400 animate-ping' : 'bg-emerald-400'}`} />
                           {p.stock_quantity} in stock
                         </span>
                       </td>
 
-                      <td className="py-3.5 px-4 text-right space-x-2">
-                        <button
+                      <td className="py-4 px-5 text-right space-x-1.5">
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
                           onClick={() => onOpenEdit(p)}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-slate-800 transition-colors"
+                          className="p-2 rounded-xl text-stone-400 hover:text-gold-300 hover:bg-gold-500/10 transition-colors"
                           title="Edit Product"
                         >
-                          <Edit2 className="w-3.5 h-3.5" />
-                        </button>
-                        <button
+                          <Edit2 className="w-4 h-4" />
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
                           onClick={() => handleDeleteClick(p)}
                           disabled={deletingId === p.id}
-                          className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-colors disabled:opacity-50"
+                          className="p-2 rounded-xl text-stone-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-50"
                           title="Delete Product"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                          <Trash2 className="w-4 h-4" />
+                        </motion.button>
                       </td>
-                    </tr>
+                    </motion.tr>
                   );
                 })
               )}
@@ -138,6 +156,7 @@ export default function Products({ products = [], onOpenCreate, onOpenEdit, onDe
           </table>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
+
